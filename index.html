@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco Cumulus</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --blue-dark:#0d3b6e;--blue-mid:#1a5fa8;--blue-light:#2a8fd4;
+    --teal:#1ab8a0;--teal-light:#4dd4be;--teal-pale:#e0f7f4;
+    --white:#ffffff;--gray-bg:#f5f7fa;--gray-text:#6b7280;--dark:#111827;
+  }
+  body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--dark);background:var(--white);overflow-x:hidden}
+  a{text-decoration:none;color:inherit}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid #e5e7eb;padding:0 2rem}
+  .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;height:64px;gap:2rem}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.2rem;color:var(--blue-dark);white-space:nowrap}
+  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue-mid),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .logo-icon svg{width:22px;height:22px;fill:white}
+  .nav-links{display:flex;gap:1.5rem;flex:1;justify-content:center}
+  .nav-links a{font-size:.9rem;color:var(--gray-text);font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:var(--blue-mid)}
+  .nav-actions{display:flex;align-items:center;gap:1rem}
+  .btn-ghost{font-size:.9rem;color:var(--blue-mid);font-weight:600;cursor:pointer;background:none;border:none;padding:.4rem .8rem;border-radius:8px;transition:background .2s}
+  .btn-ghost:hover{background:#e8f0fe}
+  .btn-primary{background:var(--blue-mid);color:white;border:none;padding:.55rem 1.2rem;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s}
+  .btn-primary:hover{background:var(--blue-dark)}
+
+  /* HERO */
+  .hero{background:var(--blue-dark);color:white;overflow:hidden;position:relative;min-height:520px;display:flex;align-items:center}
+  .hero-bg{position:absolute;right:-80px;bottom:-60px;width:700px;height:700px;opacity:.15}
+  .hero-inner{max-width:1200px;margin:0 auto;padding:4rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;position:relative;z-index:1;width:100%}
+  .hero h1{font-size:2.8rem;font-weight:800;line-height:1.15;margin-bottom:1rem}
+  .hero h1 span{color:var(--teal-light)}
+  .hero p{font-size:1.05rem;color:#cbd5e1;margin-bottom:2rem;line-height:1.7}
+  .hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+  .btn-hero{padding:.75rem 1.8rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;border:none}
+  .btn-hero-primary{background:var(--teal);color:white}
+  .btn-hero-primary:hover{background:#13a08a}
+  .btn-hero-secondary{background:transparent;color:white;border:2px solid rgba(255,255,255,.4)}
+  .btn-hero-secondary:hover{background:rgba(255,255,255,.1)}
+  /* Card 3D */
+  .card-wrap{display:flex;justify-content:center;align-items:center}
+  .credit-card{width:340px;height:210px;border-radius:18px;background:linear-gradient(135deg,#1e4080 0%,#0d6e8a 60%,#1ab8a0 100%);position:relative;padding:24px;color:white;box-shadow:0 30px 60px rgba(0,0,0,.4);transform:perspective(800px) rotateY(-8deg) rotateX(4deg);transition:transform .4s}
+  .credit-card:hover{transform:perspective(800px) rotateY(0deg) rotateX(0deg)}
+  .card-chip{width:42px;height:32px;background:linear-gradient(135deg,#f0c040,#c8960c);border-radius:5px;margin-bottom:20px}
+  .card-number{font-size:1.1rem;letter-spacing:.18em;font-family:monospace;margin-bottom:20px;opacity:.9}
+  .card-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+  .card-name{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;opacity:.8}
+  .card-expiry{font-size:.78rem;opacity:.8;text-align:right}
+  .card-logo-area{position:absolute;top:20px;right:20px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;opacity:.9}
+  .card-logo-sm{width:22px;height:22px;background:rgba(255,255,255,.3);border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .card-visa{position:absolute;bottom:20px;right:20px;font-size:1.4rem;font-weight:800;font-style:italic;opacity:.9}
+
+  /* WAVES */
+  .wave-sep{line-height:0;background:var(--blue-dark)}
+  .wave-sep svg{display:block}
+
+  /* PRODUCTS */
+  .section{padding:5rem 2rem}
+  .section-inner{max-width:1200px;margin:0 auto}
+  .section-header{text-align:center;margin-bottom:3rem}
+  .section-header h2{font-size:2rem;font-weight:800;color:var(--blue-dark);margin-bottom:.5rem}
+  .section-header p{color:var(--gray-text);font-size:1rem;max-width:560px;margin:0 auto}
+  .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem}
+  .product-card{background:white;border:1.5px solid #e5e7eb;border-radius:16px;padding:1.75rem;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+  .product-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--teal);opacity:0;transition:opacity .25s}
+  .product-card:hover{border-color:var(--teal);box-shadow:0 8px 30px rgba(26,184,160,.15);transform:translateY(-3px)}
+  .product-card:hover::before{opacity:1}
+  .product-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;font-size:1.5rem}
+  .ic-blue{background:#dbeafe}
+  .ic-teal{background:#ccfbf1}
+  .ic-purple{background:#ede9fe}
+  .ic-amber{background:#fef3c7}
+  .product-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;color:var(--blue-dark)}
+  .product-card p{font-size:.88rem;color:var(--gray-text);line-height:1.6;margin-bottom:1rem}
+  .product-link{font-size:.88rem;font-weight:600;color:var(--blue-mid);display:flex;align-items:center;gap:4px}
+  .arrow{transition:transform .2s}
+  .product-card:hover .arrow{transform:translateX(4px)}
+
+  /* BENEFITS */
+  .benefits{background:var(--gray-bg)}
+  .benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem}
+  .benefit-item{text-align:center;padding:1rem}
+  .benefit-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--blue-mid),var(--teal));border-radius:20px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+  .benefit-item h3{font-size:1rem;font-weight:700;color:var(--blue-dark);margin-bottom:.4rem}
+  .benefit-item p{font-size:.85rem;color:var(--gray-text);line-height:1.6}
+
+  /* STATS BANNER */
+  .stats-banner{background:linear-gradient(135deg,var(--blue-dark),#0d6e8a)}
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;max-width:1200px;margin:0 auto;padding:3rem 2rem}
+  .stat-item{text-align:center;color:white}
+  .stat-num{font-size:2.2rem;font-weight:900;color:var(--teal-light)}
+  .stat-label{font-size:.85rem;color:#94a3b8;margin-top:.25rem}
+
+  /* CALCULATOR */
+  .calc-section{background:white}
+  .calc-box{background:var(--gray-bg);border-radius:20px;padding:2.5rem;max-width:700px;margin:0 auto;border:1.5px solid #e5e7eb}
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem}
+  .calc-field label{display:block;font-size:.85rem;font-weight:600;color:var(--gray-text);margin-bottom:.5rem}
+  .calc-field input[type=range]{width:100%;accent-color:var(--teal);height:6px;cursor:pointer}
+  .calc-val{font-size:1.2rem;font-weight:800;color:var(--blue-dark);margin-top:.3rem}
+  .calc-result{background:linear-gradient(135deg,var(--blue-dark),#0d6e8a);border-radius:14px;padding:1.5rem;text-align:center;color:white}
+  .calc-result .cuota-label{font-size:.9rem;color:#94a3b8;margin-bottom:.5rem}
+  .calc-result .cuota-num{font-size:2.5rem;font-weight:900;color:var(--teal-light)}
+  .calc-result .cuota-sub{font-size:.8rem;color:#94a3b8;margin-top:.3rem}
+
+  /* TESTIMONIOS */
+  .testimonios-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+  .testimonio-card{background:white;border:1.5px solid #e5e7eb;border-radius:16px;padding:1.75rem}
+  .stars{color:#f59e0b;font-size:.9rem;margin-bottom:.75rem}
+  .testimonio-card p{font-size:.9rem;color:#374151;line-height:1.7;margin-bottom:1rem}
+  .testi-author{display:flex;align-items:center;gap:.75rem}
+  .testi-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:white}
+  .av1{background:linear-gradient(135deg,var(--blue-mid),var(--teal))}
+  .av2{background:linear-gradient(135deg,#7c3aed,#2a8fd4)}
+  .av3{background:linear-gradient(135deg,#0d6e8a,#1ab8a0)}
+  .testi-name{font-size:.9rem;font-weight:700;color:var(--blue-dark)}
+  .testi-role{font-size:.78rem;color:var(--gray-text)}
+
+  /* CTA FINAL */
+  .cta-section{background:linear-gradient(135deg,var(--blue-dark) 0%,#0d5e7a 50%,#0d6e8a 100%);position:relative;overflow:hidden}
+  .cta-inner{max-width:700px;margin:0 auto;padding:5rem 2rem;text-align:center;position:relative;z-index:1}
+  .cta-inner h2{font-size:2.2rem;font-weight:900;color:white;margin-bottom:1rem}
+  .cta-inner p{color:#94a3b8;font-size:1rem;margin-bottom:2rem;line-height:1.7}
+  .cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+  .btn-cta-1{background:var(--teal);color:white;border:none;padding:.75rem 2rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}
+  .btn-cta-2{background:transparent;color:white;border:2px solid rgba(255,255,255,.4);padding:.75rem 2rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}
+
+  /* FOOTER */
+  footer{background:#0a1628;color:#94a3b8;padding:3rem 2rem 1.5rem}
+  .footer-inner{max-width:1200px;margin:0 auto}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2.5rem}
+  .footer-brand .logo{color:white;margin-bottom:.75rem}
+  .footer-brand p{font-size:.85rem;line-height:1.7;max-width:260px}
+  .footer-col h4{font-size:.85rem;font-weight:700;color:white;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.08em}
+  .footer-col ul{list-style:none}
+  .footer-col ul li{margin-bottom:.5rem}
+  .footer-col ul li a{font-size:.85rem;color:#94a3b8;transition:color .2s}
+  .footer-col ul li a:hover{color:var(--teal-light)}
+  .footer-bottom{border-top:1px solid #1e2d45;padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+  .footer-bottom p{font-size:.8rem}
+  .footer-badges{display:flex;gap:.75rem}
+  .badge{background:#1e2d45;border:1px solid #2a3f5c;padding:.3rem .75rem;border-radius:20px;font-size:.75rem;color:#64748b}
+
+  /* SVG cloud icon */
+  .cloud-path{fill:white}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 18" xmlns="http://www.w3.org/2000/svg">
+          <path class="cloud-path" d="M19.5 8.5a4 4 0 00-7.5-1.5A3.5 3.5 0 004.5 10.5H19.5z"/>
+          <path class="cloud-path" d="M6 13a2 2 0 000 4h14a3 3 0 000-6 3 3 0 00-5.65-1A2 2 0 006 13z" opacity=".7"/>
+        </svg>
+      </div>
+      Banco Cumulus
+    </div>
+    <div class="nav-links">
+      <a href="#">Cuentas</a>
+      <a href="#">Tarjetas</a>
+      <a href="#">Préstamos</a>
+      <a href="#">Inversiones</a>
+      <a href="#">Por qué elegirnos</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-ghost">Acceder</button>
+      <button class="btn-primary">Abrir cuenta</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-bg" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="350" cy="350" r="300" fill="none" stroke="white" stroke-width="80"/>
+    <circle cx="350" cy="350" r="180" fill="none" stroke="white" stroke-width="50"/>
+    <circle cx="350" cy="350" r="80" fill="white"/>
+  </svg>
+  <div class="hero-inner">
+    <div>
+      <h1>Tu banco, <br><span>en las nubes.</span><br>Siempre contigo.</h1>
+      <p>Abrí tu cuenta 100% digital, sin papeles ni turnos. Disfrutá de tasas competitivas, sin comisiones y con la tecnología más segura del mercado.</p>
+      <div class="hero-btns">
+        <button class="btn-hero btn-hero-primary">Abrir cuenta gratis</button>
+        <button class="btn-hero btn-hero-secondary">Conocer productos</button>
+      </div>
+    </div>
+    <div class="card-wrap">
+      <div class="credit-card">
+        <div class="card-logo-area">
+          <div class="card-logo-sm">
+            <svg width="14" height="12" viewBox="0 0 24 18"><path fill="white" d="M19.5 8.5a4 4 0 00-7.5-1.5A3.5 3.5 0 004.5 10.5H19.5z"/><path fill="white" d="M6 13a2 2 0 000 4h14a3 3 0 000-6 3 3 0 00-5.65-1A2 2 0 006 13z" opacity=".7"/></svg>
+          </div>
+          BANCO CUMULUS
+        </div>
+        <div style="margin-top:36px">
+          <div class="card-chip"></div>
+          <div class="card-number">4000 &nbsp;1234 &nbsp;5678 &nbsp;9010</div>
+          <div class="card-bottom">
+            <div>
+              <div class="card-name">Nombre Apellido</div>
+              <div style="font-size:.7rem;opacity:.6;margin-top:2px">TITULAR</div>
+            </div>
+            <div>
+              <div class="card-expiry" style="font-size:.7rem;opacity:.6">VÁLIDO HASTA</div>
+              <div class="card-expiry">12/28</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-visa">VISA</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAVE -->
+<div class="wave-sep">
+  <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" width="100%" height="60">
+    <path d="M0,40 C360,70 1080,10 1440,40 L1440,0 L0,0 Z" fill="#0d3b6e"/>
+  </svg>
+</div>
+
+<!-- PRODUCTOS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Nuestros productos</h2>
+      <p>Todo lo que necesitás para manejar tus finanzas, en un solo lugar.</p>
+    </div>
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-icon ic-blue">🏦</div>
+        <h3>Cuenta corriente</h3>
+        <p>Manejá tu dinero sin límites. Tarjeta de débito, transferencias inmediatas y sin costo de mantenimiento.</p>
+        <div class="product-link">Ver más <span class="arrow">→</span></div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon ic-teal">💳</div>
+        <h3>Tarjeta de crédito</h3>
+        <p>Tasa variable desde 14,25% TAE, sin cuota anual y con protección antifraude incluida.</p>
+        <div class="product-link">Ver más <span class="arrow">→</span></div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon ic-purple">📈</div>
+        <h3>Inversiones</h3>
+        <p>Fondos mutuos, depósitos a plazo y más. Hacé crecer tu dinero con asesoramiento personalizado.</p>
+        <div class="product-link">Ver más <span class="arrow">→</span></div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon ic-amber">🏠</div>
+        <h3>Préstamos</h3>
+        <p>Créditos personales e hipotecarios con condiciones flexibles y aprobación en minutos.</p>
+        <div class="product-link">Ver más <span class="arrow">→</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-banner">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-num">+850K</div>
+      <div class="stat-label">Clientes activos</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">25</div>
+      <div class="stat-label">Años de experiencia</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4.8★</div>
+      <div class="stat-label">Calificación en app stores</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">Atención al cliente</div>
+    </div>
+  </div>
+</div>
+
+<!-- BENEFICIOS -->
+<section class="section benefits">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>¿Por qué elegir Cumulus?</h2>
+      <p>Más que un banco, un aliado financiero para cada etapa de tu vida.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <div class="benefit-icon">🔒</div>
+        <h3>Seguridad total</h3>
+        <p>Encriptación bancaria de nivel militar y autenticación de dos factores en todas tus operaciones.</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">⚡</div>
+        <h3>100% digital</h3>
+        <p>Abrí tu cuenta, pedí tu tarjeta y operá todo desde la app en menos de 10 minutos.</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">💰</div>
+        <h3>Sin comisiones ocultas</h3>
+        <p>Tasas transparentes y sin sorpresas. Lo que ves es exactamente lo que pagás.</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🌎</div>
+        <h3>Sin fronteras</h3>
+        <p>Usá tu tarjeta en el exterior sin recargos. Cobertura en más de 190 países.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULADORA -->
+<section class="section calc-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Calculá tu cuota</h2>
+      <p>Simulá tu préstamo personal y descubrí cuánto pagarías por mes.</p>
+    </div>
+    <div class="calc-box">
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>Monto del préstamo</label>
+          <input type="range" id="monto" min="500000" max="20000000" step="100000" value="5000000">
+          <div class="calc-val" id="monto-val">$ 5.000.000</div>
+        </div>
+        <div class="calc-field">
+          <label>Plazo en meses</label>
+          <input type="range" id="plazo" min="6" max="60" step="6" value="24">
+          <div class="calc-val" id="plazo-val">24 meses</div>
+        </div>
+      </div>
+      <div class="calc-result">
+        <div class="cuota-label">Cuota mensual estimada</div>
+        <div class="cuota-num" id="cuota">$ 248.500</div>
+        <div class="cuota-sub">Tasa nominal anual referencial: 28% — Sujeto a evaluación crediticia</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="section" style="background:var(--gray-bg)">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Lo que dicen nuestros clientes</h2>
+      <p>Más de 850.000 personas ya confían en Banco Cumulus.</p>
+    </div>
+    <div class="testimonios-grid">
+      <div class="testimonio-card">
+        <div class="stars">★★★★★</div>
+        <p>"Abrir la cuenta fue facilísimo, en menos de 10 minutos ya tenía todo listo. La app es muy intuitiva y la atención al cliente responde rapidísimo."</p>
+        <div class="testi-author">
+          <div class="testi-avatar av1">MR</div>
+          <div>
+            <div class="testi-name">Martina Rodríguez</div>
+            <div class="testi-role">Emprendedora · Santiago</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonio-card">
+        <div class="stars">★★★★★</div>
+        <p>"Finalmente un banco que no cobra por todo. Llevo 3 años usando la tarjeta en viajes al exterior y nunca tuve un cargo adicional sorpresa."</p>
+        <div class="testi-author">
+          <div class="testi-avatar av2">CP</div>
+          <div>
+            <div class="testi-name">Carlos Paredes</div>
+            <div class="testi-role">Consultor IT · Buenos Aires</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonio-card">
+        <div class="stars">★★★★☆</div>
+        <p>"Saqué un préstamo para remodelar mi casa. La aprobación fue en minutos y la tasa fue mucho mejor que la que me ofrecían otros bancos."</p>
+        <div class="testi-author">
+          <div class="testi-avatar av3">LV</div>
+          <div>
+            <div class="testi-name">Laura Villanueva</div>
+            <div class="testi-role">Arquitecta · Montevideo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Empezá hoy,<br>sin ningún costo.</h2>
+    <p>Abrí tu cuenta en minutos, completamente online. Sin papeles, sin turnos, sin excusas.</p>
+    <div class="cta-btns">
+      <button class="btn-cta-1">Abrir cuenta gratis</button>
+      <button class="btn-cta-2">Hablar con un asesor</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo" style="color:white;margin-bottom:.75rem">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 18" width="22" height="22"><path fill="white" d="M19.5 8.5a4 4 0 00-7.5-1.5A3.5 3.5 0 004.5 10.5H19.5z"/><path fill="white" d="M6 13a2 2 0 000 4h14a3 3 0 000-6 3 3 0 00-5.65-1A2 2 0 006 13z" opacity=".7"/></svg>
+          </div>
+          Banco Cumulus
+        </div>
+        <p>Simplificamos tus finanzas con tecnología de punta y atención humana. Tu dinero, seguro y siempre disponible.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Productos</h4>
+        <ul>
+          <li><a href="#">Cuenta corriente</a></li>
+          <li><a href="#">Tarjeta de crédito</a></li>
+          <li><a href="#">Tarjeta débito</a></li>
+          <li><a href="#">Préstamos</a></li>
+          <li><a href="#">Inversiones</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Empresa</h4>
+        <ul>
+          <li><a href="#">Quiénes somos</a></li>
+          <li><a href="#">Noticias</a></li>
+          <li><a href="#">Trabaja con nosotros</a></li>
+          <li><a href="#">Responsabilidad social</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Ayuda</h4>
+        <ul>
+          <li><a href="#">Centro de ayuda</a></li>
+          <li><a href="#">Seguridad</a></li>
+          <li><a href="#">Términos y condiciones</a></li>
+          <li><a href="#">Política de privacidad</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Banco Cumulus S.A. — Entidad regulada y supervisada por la Comisión para el Mercado Financiero (CMF).</p>
+      <div class="footer-badges">
+        <span class="badge">🔒 SSL Seguro</span>
+        <span class="badge">✓ CMF Regulado</span>
+        <span class="badge">ISO 27001</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const montoEl = document.getElementById('monto');
+  const plazoEl = document.getElementById('plazo');
+  const montoVal = document.getElementById('monto-val');
+  const plazoVal = document.getElementById('plazo-val');
+  const cuotaEl = document.getElementById('cuota');
+
+  function fmt(n){return'$ '+Math.round(n).toLocaleString('es-AR')}
+  function calcCuota(){
+    const P = +montoEl.value;
+    const n = +plazoEl.value;
+    const r = 0.28/12;
+    const c = P*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    cuotaEl.textContent = fmt(c);
+  }
+  montoEl.addEventListener('input',()=>{montoVal.textContent=fmt(+montoEl.value);calcCuota()});
+  plazoEl.addEventListener('input',()=>{plazoVal.textContent=plazoEl.value+' meses';calcCuota()});
+  calcCuota();
+</script>
+
+<!-- ============================================================== -->
+<!-- Embedded Messaging - Banco Cumulus / Agente Disputas             -->
+<!-- ============================================================== -->
+<script type="text/javascript">
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'es';
+      embeddedservice_bootstrap.init(
+        '00Dg7000005Wltm',
+        'Disputas_Chat_MIAW',
+        'https://storm-0da1adeb707833.my.site.com/ESWDisputasChatMIAW1778781369476',
+        {
+          scrt2URL: 'https://storm-0da1adeb707833.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  }
+</script>
+<script type="text/javascript"
+  src="https://storm-0da1adeb707833.my.site.com/ESWDisputasChatMIAW1778781369476/assets/js/bootstrap.min.js"
+  onload="initEmbeddedMessaging()">
+</script>
+
+</body>
+</html>
