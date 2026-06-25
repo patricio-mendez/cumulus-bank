@@ -39,26 +39,29 @@ Sitio web ficticio de Banco Cumulus, preparado para demo de **Agentforce** integ
 
 Para que el widget MIAW funcione desde el dominio público de GitHub Pages, el dominio debe estar autorizado en la org `sdo-disputes`:
 
-### CORS
+### 1. CORS Allowed Origins
 
-`Setup → CORS → Allowed Origins List` → agregar:
+`Setup → Security → CORS → Allowed Origins List` → **New** → agregar:
 ```
 https://patricio-mendez.github.io
 ```
 
-### Trusted URLs / CSP
+### 2. Trusted URLs (CSP)
 
-`Setup → Trusted URLs` → agregar entrada para `https://patricio-mendez.github.io` con permisos:
-- `connect-src`
-- `frame-src`
-- `script-src`
+`Setup → Security → Trusted URLs` → **New Trusted URL**:
+- **URL:** `https://patricio-mendez.github.io`
+- **CSP Context:** `All`
+- **CSP Directives a marcar:**
+  - `connect-src`
+  - `frame-src`
+  - `script-src`
+  - `img-src`
+  - `style-src`
+  - `font-src`
 
-### Embedded Service Deployment
+> Sin estos dos pasos el bootstrap MIAW se cargará pero la conversación fallará con error de CORS.
 
-`Setup → Embedded Service Deployments → Disputas_Chat_MIAW → Edit`:
-- En **Site Endpoint Allowlist**, incluir: `https://patricio-mendez.github.io`
-
-> Sin estos tres pasos el bootstrap MIAW se cargará pero la conversación fallará con error de CORS o Trusted URL.
+> **Nota:** MIAW no tiene un "Site Endpoint Allowlist" dentro del Embedded Service Deployment — el control de qué dominios pueden invocar al bootstrap se hace 100% vía CORS + Trusted URLs a nivel org.
 
 ## Snippet MIAW (referencia)
 
